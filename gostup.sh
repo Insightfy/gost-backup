@@ -138,8 +138,8 @@ WEBSOCKET_M(){
              read -e -p " 请输入目标端口:" inport2
              read -e -p " 请输入终点端口:" inport3	
 			
-			echo "nohup gost -L=:${inport}/${ipout}:${inport3} -F=${method12}://${ipout}:${inport2}/api >gost-server.log 2>&1 &"
-            nohup gost -L=:${inport}/${ipout}:${inport3} -F=${method12}://${ipout}:${inport2}/api >gost-server.log 2>&1 &
+			echo "nohup gost -L=:${inport}/${ipout}:${inport3} -F=${method12}://${ipout}:${inport2}/api >/dev/null 2>&1 &"
+            nohup gost -L=:${inport}/${ipout}:${inport3} -F=${method12}://${ipout}:${inport2}/api >/dev/null 2>&1 &
 }
 
 ADDCILENT_ct(){
@@ -149,8 +149,8 @@ ADDCILENT_ct(){
 			 read -e -p " 请输入ws 参数(如果不知道请直接回车):" type4
 							[[ -z "${type4}" ]] && type4="?path=/api&rbuf=4096&wbuf=4096&compression=false"
 							
-			echo "nohup  gost -D -L "ws://${ipout}:${inport2}${type4}"  > gost-ct.log 2>&1 &"
-            nohup  gost -D -L "${method13}://${ipout}:${inport2}${type4}"  > gost-ct.log 2>&1 &
+			echo "nohup  gost -D -L "${method13}://${ipout}:${inport2}${type4}"  >/dev/null 2>&1 &"
+            nohup  gost -D -L "${method13}://${ipout}:${inport2}${type4}"  >/dev/null 2>&1 &
 }
 
 
