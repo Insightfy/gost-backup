@@ -2,7 +2,7 @@
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 
-sh_ver=1.0.0
+sh_ver=1.0.1
 Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
 Info="${Green_font_prefix}[信息]${Font_color_suffix}"
 Error="${Red_font_prefix}[错误]${Font_color_suffix}"
@@ -38,6 +38,10 @@ Installation_dependency(){
 		if [[ ${release} == "centos" ]]; then
 			yum update
 			yum install -y gzip
+			yum install -y curl
+			yum install -y wget
+			yum install -y epel-release
+			yum install -y nload net-tools htop
 		else
 			apt-get update
 			apt-get install -y gzip
@@ -53,7 +57,7 @@ check_new_ver(){
 ct_new_ver=$(wget --no-check-certificate -qO- -t2 -T3 https://api.github.com/repos/ginuerzh/gost/releases/latest| grep "tag_name"| head -n 1| awk -F ":" '{print $2}'| sed 's/\"//g;s/,//g;s/ //g;s/v//g')
 if [[ -z ${ct_new_ver} ]]; then
 		echo -e "${Error} gost 最新版本获取失败，请手动获取最新版本号[ https://github.com/ginuerzh/gost/releases ]"
-		read -e -p "请输入版本号 [ 格式 x.x.xx , 如 0.8.21 ] :" ct_new_ver
+		read -e -p "请输入版本号 [ 格式 x.x.xx , 如 2.11.0 ] :" ct_new_ver
 		[[ -z "${ct_new_ver}" ]] && echo "取消..." && exit 1
 	else
 		echo -e "${Info} gost 目前最新版本为 ${ct_new_ver}"
@@ -132,26 +136,43 @@ Restart_ct(){
 
 WEBSOCKET_M(){
 			`systemctl restart gost`
-			 read -e -p " 请输入传输方式(ws/wss/wss+tls/mwss/mwss+tls)" method12
+			 read -e -p " 请输入传输方式(ws/wss/mws/mwss [+tls]):" method12
              read -e -p " 请输入监听端口:" inport
              read -e -p " 请输入目标IP:" ipout
              read -e -p " 请输入目标端口:" inport2
-             read -e -p " 请输入终点端口:" inport3	
+             read -e -p " 请输入终点端口:" inport3
+			 read -e -p " 是否启用调试模式(y/n):" testmode
+
+			if [[ ${testmode} == "n" ]]; then
+				echo "nohup gost -L=:${inport}/${ipout}:${inport3} -F=${method12}://${ipout}:${inport2}/api >/dev/null 2>&1 &"
+				nohup gost -L=:${inport}/${ipout}:${inport3} -F=${method12}://${ipout}:${inport2}/api >/dev/null 2>&1 &
+			else
+				echo "gost -L=:${inport}/${ipout}:${inport3} -F=${method12}://${ipout}:${inport2}/api "
+				gost -L=:${inport}/${ipout}:${inport3} -F=${method12}://${ipout}:${inport2}/api 
+			fi	
 			
-			echo "nohup gost -L=:${inport}/${ipout}:${inport3} -F=${method12}://${ipout}:${inport2}/api >/dev/null 2>&1 &"
-            nohup gost -L=:${inport}/${ipout}:${inport3} -F=${method12}://${ipout}:${inport2}/api >/dev/null 2>&1 &
+
+
 }
 
 ADDCILENT_ct(){
 			`systemctl restart gost`
+
 			 read -e -p " 请输入传输方式(ws/wss/wss+tls/mwss/mwss+tls)" method13
              read -e -p " 请输入监听端口" inport2	
 			 read -e -p " 请输入ws 参数(如果不知道请直接回车):" type4
 							[[ -z "${type4}" ]] && type4="?path=/api&rbuf=4096&wbuf=4096&compression=false"
-							
-			echo "nohup  gost -D -L "${method13}://${ipout}:${inport2}${type4}"  >/dev/null 2>&1 &"
-            nohup  gost -D -L "${method13}://${ipout}:${inport2}${type4}"  >/dev/null 2>&1 &
+			 read -e -p " 是否启用调试模式(y/n):" testmode
+
+			if [[ ${testmode} == "n" ]]; then
+				echo "nohup  gost -D -L "${method13}://${ipout}:${inport2}${type4}"  >/dev/null 2>&1 &"
+				nohup  gost -D -L "${method13}://${ipout}:${inport2}${type4}"  >/dev/null 2>&1 &
+			else
+				echo "gost -D -L "${method13}://${ipout}:${inport2}${type4}"  "
+				gost -D -L "${method13}://${ipout}:${inport2}${type4}"
+			fi
 }
+		
 
 
     
@@ -159,6 +180,7 @@ echo && echo -e "  gost 一键管理脚本 ${Red_font_prefix}[v${sh_ver}]${Font_
   --------gost tunnel---------
   ---- 安装程序基于fiisi  ----
   ---- CLIENT BY sncat    ----
+  ---- 2020/3/22 -------------
   
  ${Green_font_prefix}1.${Font_color_suffix} 安装 gost
  ${Green_font_prefix}2.${Font_color_suffix} 卸载 gost
@@ -170,7 +192,7 @@ echo && echo -e "  gost 一键管理脚本 ${Red_font_prefix}[v${sh_ver}]${Font_
  ${Green_font_prefix}6.${Font_color_suffix} 设置 gost中转端
  ${Green_font_prefix}7.${Font_color_suffix} 设置 gost客户端
 ————————————" && echo
-read -e -p " 请输入数字 [1-5]:" num
+read -e -p " 请输入数字 [1-7]:" num
 case "$num" in
 	1)
 	Install_ct
