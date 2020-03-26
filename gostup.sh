@@ -145,10 +145,10 @@ WEBSOCKET_M(){
 
 			if [[ ${testmode} == "n" ]]; then
 				echo "nohup gost -L=:${inport}/${ipout}:${inport3} -F=${method12}://${ipout}:${inport2}/api >/dev/null 2>&1 &"
-				nohup gost -L=:${inport}/${ipout}:${inport3} -F=${method12}://${ipout}:${inport2}/api >/dev/null 2>&1 &
+				nohup gost -L=:${inport}/:${inport3} -F=${method12}://${ipout}:${inport2}/api >/dev/null 2>&1 &
 			else
 				echo "gost -L=:${inport}/${ipout}:${inport3} -F=${method12}://${ipout}:${inport2}/api "
-				gost -L=:${inport}/${ipout}:${inport3} -F=${method12}://${ipout}:${inport2}/api 
+				gost -L=:${inport}/:${inport3} -F=${method12}://${ipout}:${inport2}/api 
 			fi	
 			
 
