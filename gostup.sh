@@ -144,10 +144,10 @@ WEBSOCKET_M(){
 			 read -e -p " 是否启用调试模式(y/n):" testmode
 
 			if [[ ${testmode} == "n" ]]; then
-				echo "nohup gost -L=:${inport}/${ipout}:${inport3} -F=${method12}://${ipout}:${inport2}/api >/dev/null 2>&1 &"
+				echo "nohup gost -L=:${inport}/:${inport3} -F=${method12}://${ipout}:${inport2}/api >/dev/null 2>&1 &"
 				nohup gost -L=:${inport}/:${inport3} -F=${method12}://${ipout}:${inport2}/api >/dev/null 2>&1 &
 			else
-				echo "gost -L=:${inport}/${ipout}:${inport3} -F=${method12}://${ipout}:${inport2}/api "
+				echo "gost -L=:${inport}/:${inport3} -F=${method12}://${ipout}:${inport2}/api "
 				gost -L=:${inport}/:${inport3} -F=${method12}://${ipout}:${inport2}/api 
 			fi	
 			
@@ -168,7 +168,7 @@ ADDCILENT_ct(){
 				echo "nohup  gost -D -L "${method13}://:${inport2}${type4}"  >/dev/null 2>&1 &"
 				nohup  gost -D -L "${method13}://:${inport2}${type4}"  >/dev/null 2>&1 &
 			else
-				echo "gost -D -L "${method13}://${ipout}:${inport2}${type4}"  "
+				echo "gost -D -L "${method13}://:${inport2}${type4}"  "
 				gost -D -L "${method13}://:${inport2}${type4}"
 			fi
 }
